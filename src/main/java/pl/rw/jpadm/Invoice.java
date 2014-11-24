@@ -1,9 +1,11 @@
 package pl.rw.jpadm;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.Date;
 import java.util.Objects;
@@ -16,9 +18,9 @@ public class Invoice extends BaseEntity<Integer,Invoice> {
     @Column
     private Date maturityDate;
     @Column
-    private double amount;
+    double amount;
     @ManyToOne
-    private Contract contract;
+    Contract contract;
 
     protected Invoice() {
     }
@@ -27,6 +29,11 @@ public class Invoice extends BaseEntity<Integer,Invoice> {
         this.maturityDate = maturityDate;
         this.amount = amount;
         this.contract = contract;
+    }
+
+    public void remove() {
+        contract.removeInvoice(this);
+        contract = null;
     }
 
     @Override
@@ -45,7 +52,7 @@ public class Invoice extends BaseEntity<Integer,Invoice> {
                 "id=" + id +
                 ", maturityDate=" + maturityDate +
                 ", amount=" + amount +
-                ", contract=" + contract.id() +
+                ", contract=" + (contract != null ? contract.id() : "null") +
                 '}';
     }
 }

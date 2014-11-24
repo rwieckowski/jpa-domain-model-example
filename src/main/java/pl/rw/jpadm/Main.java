@@ -23,8 +23,13 @@ public class Main {
         emitInvoices(em);
         printCustomers(em);
 
+        removeInvoices(em);
+        printCustomers(em);
+
         closeContracts(em);
         printCustomers(em);
+
+        printInvoices(em);
     }
 
     private static void addCustomer(EntityManager em, Customer c) {
@@ -56,6 +61,21 @@ public class Main {
         em.getTransaction().commit();
     }
 
+    private static void removeInvoices(EntityManager em) {
+        em.getTransaction().begin();
+
+        List<Invoice> invoices = em
+                .createQuery("from Invoice", Invoice.class)
+                .getResultList();
+        for (Invoice i : invoices) {
+            if (i.id() % 2 == 0) {
+                i.remove();
+                em.remove(i);
+            }
+        }
+        em.getTransaction().commit();
+    }
+
     private static void closeContracts(EntityManager em) {
         em.getTransaction().begin();
         List<Contract> contracts = em
@@ -74,4 +94,11 @@ public class Main {
             System.out.println(ct);
         System.out.println("EOF");
     }
+
+    private static void printInvoices(EntityManager em) {
+        List<Invoice> invoices = em.createQuery("from Invoice", Invoice.class).getResultList();
+        System.out.println("INVOICES");
+        for (Invoice i : invoices)
+            System.out.println(i);
+        System.out.println("END");    }
 }
